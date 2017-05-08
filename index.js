@@ -14,17 +14,25 @@ const REGEX = {
 
 const posts = JSON.parse(dump.slice(dump.indexOf('[')));
 
-const parsedPosts = posts.map(post => {
-    return Object.assign({}, post, {
+const parsedPosts = posts.reduce((acc, curr) => {
+    const postContent = Object.assign({}, curr, {
         template: `
-            # ${post.post_title}
+            # ${curr.post_title}
             
-            Posted on ${post.post_date}
+            Posted on ${curr.post_date}
             
-            ${toMarkdown(post.post_content)}
+            ${toMarkdown(curr.post_content)}
         `
-    })
-});
+    });
+    if (acc.filter(item => curr.post_title === item.post_title).length > 1) {
+        return acc.splice(acc.indexOf(curr), 1, [postContent])
+    } else {
+        acc.push(postContent);
+        return acc;
+    }
+}, []);
+
+console.log(parsedPosts);
 
 const months = [
     'January',
@@ -41,38 +49,13 @@ const months = [
     'December'
 ];
 
-const datedPosts = parsedPosts.reduce((acc, curr) => {
-    const datePosted = new Date(curr.post_date);
-    const yearPosted = getYear(datePosted);
-    const monthPosted = months[datePosted.getMonth()];
-    console.log(acc);
-    return Object.assign({}, acc, {
-       [yearPosted]: {
-           [monthPosted]: {
-               posts: [
-                   safeGet(acc, '[yearPosted][monthPosted].posts'),
-                   curr
-               ]
-           }
-       }
-    });
-}, {});
-
-console.log(datedPosts);
-
-function prepareDirectories(datesWithPosts) {
-    Object.keys(datesWithPosts).forEach(year => {
-        shelljs.mkdir('-p', `./archive/${year}`);
-        Object.keys(datesWithPosts[year]).forEach(month => {
-            shelljs.mkdir('-p', `./archive/${year}/${month}`);
-        })
-    });
-}
-
 parsedPosts.forEach(post => {
-    prepareDirectories(datedPosts);
-    const datePosted = new Date(post.post_date);
-    const yearPosted = getYear(datePosted);
-    const monthPosted = months[datePosted.getMonth()];
-    fs.writeFileSync(`${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
+    parsedPosts.forEach(post => {
+        const datePosted = new Date(post.post_date);
+        const yearPosted = getYear(datePosted);
+        const monthPosted = months[datePosted.getMonth()];
+        shelljs.mkdir('-p', `./archive/${yearPosted}`);
+        shelljs.mkdir('-p', `./archive/${yearPosted}/${monthPosted}`);
+        fs.writeFileSync(`${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
+    }, {});
 });
