@@ -1,0 +1,26 @@
+{
+  "name": "wordpress-to-markdown",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "date-fns": "^1.28.4",
+    "lodash": "^4.17.4",
+    "shelljs": "^0.7.7",
+    "to-markdown": "^3.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://3stacks@github.com/3stacks/wordpress-to-markdown.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3stacks/wordpress-to-markdown/issues"
+  },
+  "homepage": "https://github.com/3stacks/wordpress-to-markdown#readme"
+}
