@@ -4,6 +4,7 @@ const toMarkdown = require('to-markdown');
 const getMonth = require('date-fns/get_month');
 const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
+const safeGet = require('lodash/get');
 
 const REGEX = {
     DUMP_SECTION_HEADINGS: /(--\n-- Dumping data for table `.*`\n--)/igm,
@@ -44,11 +45,12 @@ const datedPosts = parsedPosts.reduce((acc, curr) => {
     const datePosted = new Date(curr.post_date);
     const yearPosted = getYear(datePosted);
     const monthPosted = months[datePosted.getMonth()];
+    console.log(acc);
     return Object.assign({}, acc, {
        [yearPosted]: {
            [monthPosted]: {
                posts: [
-                   ...acc[yearPosted][monthPosted][posts],
+                   safeGet(acc, '[yearPosted][monthPosted].posts'),
                    curr
                ]
            }
@@ -56,14 +58,21 @@ const datedPosts = parsedPosts.reduce((acc, curr) => {
     });
 }, {});
 
-function prepareDirectories() {
-    shelljs.exec('mkdir', '-p', `myProject/{src,doc,tools,db}`);
+console.log(datedPosts);
+
+function prepareDirectories(datesWithPosts) {
+    Object.keys(datesWithPosts).forEach(year => {
+        shelljs.mkdir('-p', `./archive/${year}`);
+        Object.keys(datesWithPosts[year]).forEach(month => {
+            shelljs.mkdir('-p', `./archive/${year}/${month}`);
+        })
+    });
 }
 
 parsedPosts.forEach(post => {
+    prepareDirectories(datedPosts);
     const datePosted = new Date(post.post_date);
     const yearPosted = getYear(datePosted);
     const monthPosted = months[datePosted.getMonth()];
-    shelljs.exec(`mkdir ./${yearPosted}/${monthPosted}`);
     fs.writeFileSync(`${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
 });
