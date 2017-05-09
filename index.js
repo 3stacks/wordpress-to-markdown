@@ -17,45 +17,27 @@ const posts = JSON.parse(dump.slice(dump.indexOf('[')));
 const parsedPosts = posts.reduce((acc, curr) => {
     const postContent = Object.assign({}, curr, {
         template: `
-            # ${curr.post_title}
-            
-            Posted on ${curr.post_date}
-            
-            ${toMarkdown(curr.post_content)}
+# ${curr.post_title}
+
+Posted on ${curr.post_date}
+
+${toMarkdown(curr.post_content)}
         `
     });
-    if (acc.filter(item => curr.post_title === item.post_title).length > 1) {
-        return acc.splice(acc.indexOf(curr), 1, [postContent])
+
+    if (acc.includes(curr)) {
+        return acc.splice(acc.indexOf(curr), 1, [postContent]);
     } else {
         acc.push(postContent);
         return acc;
     }
 }, []);
 
-console.log(parsedPosts);
-
-const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-];
-
 parsedPosts.forEach(post => {
-    parsedPosts.forEach(post => {
-        const datePosted = new Date(post.post_date);
-        const yearPosted = getYear(datePosted);
-        const monthPosted = months[datePosted.getMonth()];
-        shelljs.mkdir('-p', `./archive/${yearPosted}`);
-        shelljs.mkdir('-p', `./archive/${yearPosted}/${monthPosted}`);
-        fs.writeFileSync(`${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
-    }, {});
-});
+    const datePosted = new Date(post.post_date);
+    const yearPosted = getYear(datePosted);
+    const monthPosted = datePosted.getMonth() + 1;
+    shelljs.mkdir('-p', `./archive/${yearPosted}`);
+    shelljs.mkdir('-p', `./archive/${yearPosted}/${monthPosted}`);
+    fs.writeFileSync(`${__dirname}/archive/${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
+}, {});
