@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/3stacks/wordpress-to-markdown/issues"
   },
+  "bin": {
+    "wordpress-to-markdown": "./index.js"
+  },
   "homepage": "https://github.com/3stacks/wordpress-to-markdown#readme"
 }

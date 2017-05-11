@@ -1,16 +1,12 @@
+#!/usr/bin/env node
 const fs = require('fs');
-const dump = fs.readFileSync('./dump.json').toString();
+const dump = fs.readFileSync(`${__dirname}/dump.json`).toString();
 const toMarkdown = require('to-markdown');
-const getMonth = require('date-fns/get_month');
 const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
-const safeGet = require('lodash/get');
-
-const REGEX = {
-    DUMP_SECTION_HEADINGS: /(--\n-- Dumping data for table `.*`\n--)/igm,
-    POSTS_SECTION_DATA: /(--\n-- Dumping data for table `wp_posts`\n--)/igm,
-    STRUCTURE_SECTION_HEADINGS: /(--\n-- Table structure for table `.*`\n--)/igm
-};
+console.log(process);
+const workingDir = process.cwd();
+const baseDir = __dirname;
 
 const posts = JSON.parse(dump.slice(dump.indexOf('[')));
 
@@ -37,7 +33,7 @@ parsedPosts.forEach(post => {
     const datePosted = new Date(post.post_date);
     const yearPosted = getYear(datePosted);
     const monthPosted = datePosted.getMonth() + 1;
-    shelljs.mkdir('-p', `./archive/${yearPosted}`);
-    shelljs.mkdir('-p', `./archive/${yearPosted}/${monthPosted}`);
+    shelljs.mkdir('-p', `${__dirname}/archive/${yearPosted}`);
+    shelljs.mkdir('-p', `${__dirname}/archive/${yearPosted}/${monthPosted}`);
     fs.writeFileSync(`${__dirname}/archive/${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
 }, {});
