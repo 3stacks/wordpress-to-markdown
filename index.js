@@ -4,8 +4,7 @@ const chalk = require('chalk');
 const toMarkdown = require('to-markdown');
 const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
-const workingDir = process.cwd();
-const baseDir = __dirname;
+const dashify = require('dashify');
 const rawOutputDir = process.argv.find(arg => arg.includes('--output'));
 const outputDir = rawOutputDir.slice(rawOutputDir.indexOf('=') + 1);
 
@@ -51,5 +50,5 @@ parsedPosts.forEach(post => {
     const monthPosted = datePosted.getMonth() + 1;
     shelljs.mkdir('-p', `${process.cwd()}/${outputDir || 'archive'}/${yearPosted}`);
     shelljs.mkdir('-p', `${process.cwd()}/${outputDir || 'archive'}/${yearPosted}/${monthPosted}`);
-    fs.writeFileSync(`${process.cwd()}/${outputDir || 'archive'}/${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
+    fs.writeFileSync(`${process.cwd()}/${outputDir || 'archive'}/${yearPosted}/${monthPosted}/${dashify(post.post_title)}.md`, post.template);
 }, {});
