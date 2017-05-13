@@ -1,14 +1,30 @@
 #!/usr/bin/env node
 const fs = require('fs');
-const dump = fs.readFileSync(`${__dirname}/dump.json`).toString();
+const chalk = require('chalk');
 const toMarkdown = require('to-markdown');
 const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
-console.log(process);
 const workingDir = process.cwd();
 const baseDir = __dirname;
+const rawOutputDir = process.argv.find(arg => arg.includes('--output'));
+const outputDir = rawOutputDir.slice(rawOutputDir.indexOf('=') + 1);
 
-const posts = JSON.parse(dump.slice(dump.indexOf('[')));
+const theFile = process.argv.find(arg => arg.includes('.json'));
+if (!theFile) {
+    console.error(chalk.bgRed.white('Could not detect a json file name in command. Use the command like this: wordpress-to-markdown [input] (e.g. fileName.json)'));
+    return;
+}
+const dumpPath = `${process.cwd()}/${theFile}`;
+let dumpContents;
+
+try {
+    dumpContents = fs.readFileSync(dumpPath).toString();
+} catch(e) {
+    console.error(chalk.bgRed.white(`Could not find file '${theFile}' in ${dumpPath}, please check the fileName/path and try again.`));
+    return;
+}
+
+const posts = JSON.parse(dumpContents.slice(dumpContents.indexOf('[')));
 
 const parsedPosts = posts.reduce((acc, curr) => {
     const postContent = Object.assign({}, curr, {
@@ -33,7 +49,7 @@ parsedPosts.forEach(post => {
     const datePosted = new Date(post.post_date);
     const yearPosted = getYear(datePosted);
     const monthPosted = datePosted.getMonth() + 1;
-    shelljs.mkdir('-p', `${__dirname}/archive/${yearPosted}`);
-    shelljs.mkdir('-p', `${__dirname}/archive/${yearPosted}/${monthPosted}`);
-    fs.writeFileSync(`${__dirname}/archive/${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
+    shelljs.mkdir('-p', `${process.cwd()}/${outputDir || 'archive'}/${yearPosted}`);
+    shelljs.mkdir('-p', `${process.cwd()}/${outputDir || 'archive'}/${yearPosted}/${monthPosted}`);
+    fs.writeFileSync(`${process.cwd()}/${outputDir || 'archive'}/${yearPosted}/${monthPosted}/${post.post_title}.md`, post.template);
 }, {});
