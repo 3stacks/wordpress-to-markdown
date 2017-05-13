@@ -1,5 +1,5 @@
 {
-  "name": "wordpress-to-markdown",
+  "name": "@lukeboyle/wordpress-to-markdown",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
