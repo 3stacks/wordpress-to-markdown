@@ -26,20 +26,24 @@ try {
 const posts = JSON.parse(dumpContents.slice(dumpContents.indexOf('[')));
 
 const parsedPosts = posts.reduce((acc, curr) => {
-    const postContent = Object.assign({}, curr, {
-        template: `
+    if (curr.post_content.length > 0) {
+        const postContent = Object.assign({}, curr, {
+            template: `
 # ${curr.post_title}
 
 Posted on ${curr.post_date}
 
 ${toMarkdown(curr.post_content)}
         `
-    });
+        });
 
-    if (acc.includes(curr)) {
-        return acc.splice(acc.indexOf(curr), 1, [postContent]);
+        if (acc.includes(curr)) {
+            return acc.splice(acc.indexOf(curr), 1, [postContent]);
+        } else {
+            acc.push(postContent);
+            return acc;
+        }
     } else {
-        acc.push(postContent);
         return acc;
     }
 }, []);
