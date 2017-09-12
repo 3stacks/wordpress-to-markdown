@@ -31,7 +31,7 @@ const parsedPosts = posts.reduce((acc, curr) => {
             template: `
 # ${curr.post_title}
 
-Posted on ${curr.post_date}
+## Posted on ${curr.post_date}
 
 ${toMarkdown(curr.post_content)}
         `
