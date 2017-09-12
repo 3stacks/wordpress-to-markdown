@@ -6,7 +6,7 @@ const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
 const dashify = require('dashify');
 const rawOutputDir = process.argv.find(arg => arg.includes('--output'));
-const outputDir = rawOutputDir.slice(rawOutputDir.indexOf('=') + 1);
+const outputDir = !!rawOutputDir ? rawOutputDir.slice(rawOutputDir.indexOf('=') + 1) : '';
 
 const theFile = process.argv.find(arg => arg.includes('.json'));
 if (!theFile) {
@@ -29,9 +29,9 @@ const parsedPosts = posts.reduce((acc, curr) => {
     if (curr.post_content.length > 0) {
         const postContent = Object.assign({}, curr, {
             template: `
-# ${curr.post_title}
+# ${curr.post_title}\n
 
-## Posted on ${curr.post_date}
+## Posted on ${curr.post_date}\n
 
 ${toMarkdown(curr.post_content)}
         `
