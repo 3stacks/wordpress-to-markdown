@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "allege": "^1.0.6",
     "chalk": "^1.1.3",
     "dashify": "^0.2.2",
     "date-fns": "^1.28.4",
