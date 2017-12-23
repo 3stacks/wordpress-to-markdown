@@ -2,7 +2,8 @@
 const fs = require('fs');
 const allege = require('allege');
 const chalk = require('chalk');
-const toMarkdown = require('to-markdown');
+const TurndownService = require('turndown');
+const turndownService = new TurndownService();
 const getYear = require('date-fns/get_year');
 const shelljs = require('shelljs');
 const dashify = require('dashify');
@@ -48,7 +49,7 @@ const parsedPosts = posts.reduce((acc, curr) => {
 | post_status | ${curr.post_status} | 
 | post_type | ${curr.post_type} |
 
-${toMarkdown(curr.post_content)}
+${turndownService.turndown(curr.post_content)}
         `
         });
 
